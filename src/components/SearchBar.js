@@ -11,7 +11,7 @@ class SearchBar extends React.Component {
 
   submitText = (e) => {
     e.preventDefault();
-    console.log('haha');
+    // TODO::: CALL API HERE
   }
 
   render = () => { 
