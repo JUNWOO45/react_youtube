@@ -1,9 +1,13 @@
 import React from 'react';
 
 class SearchBar extends React.Component {
-  state = { 
-    inputText: ''
-  };
+  constructor(props) {
+    super(props);
+
+    this.state = { 
+      inputText: ''
+    };
+  }
 
   changeValue = (e) => {
     return this.setState({ inputText: e.target.value });
@@ -11,7 +15,9 @@ class SearchBar extends React.Component {
 
   submitText = (e) => {
     e.preventDefault();
+    
     // TODO::: CALL API HERE
+    this.props.onFormSubmit(this.state.inputText);
   }
 
   render = () => { 
