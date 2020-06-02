@@ -7,7 +7,9 @@ import VideoDetail from './VideoDetail';
 class App extends React.Component {
   state = {
     videos: [],
-    selectedVideo: ''
+    selectedVideo: '',
+    nextPageToken: '',
+    currentInputValue: ''
   };
 
   getYoutubeVidoes =  async value => {
@@ -18,8 +20,39 @@ class App extends React.Component {
     });
 
     console.log('response : ', response);
-    this.setState({ videos: response.data.items})
+    const state = { 
+      videos: response.data.items, 
+      currentInputValue: value 
+    };
+
+    this.updateNextPageToken(state, response);
+    this.setState(state);
   };
+
+  seeMore = async () => {
+    console.log('currentPageToken : ', this.state.nextPageToken);
+    const response = await youtube.get('/search', {
+      params: {
+        q: this.state.currentInputValue,
+        pageToken: this.state.nextPageToken
+      }
+    })
+
+    const state = { 
+      videos: [ ...this.state.videos, ...response.data.items],
+    };
+
+    this.updateNextPageToken(state, response);
+    this.setState(state);
+  }
+
+  updateNextPageToken = (state, response) => {
+    if(response && response.data && response.data.nextPageToken) {
+      return state.nextPageToken = response.data.nextPageToken;
+    }
+
+    return;
+  }
 
   onVideoSelect = (video) => {
     this.setState({ selectedVideo: video });
@@ -31,6 +64,7 @@ class App extends React.Component {
         <SearchBar onFormSubmit={this.getYoutubeVidoes}></SearchBar>
         <VideoDetail video={this.state.selectedVideo}></VideoDetail>
         <VideoList videos={this.state.videos} onVideoSelect={this.onVideoSelect}></VideoList>
+        <div onClick={this.seeMore}>더보기</div>
       </div>
     )
   }
